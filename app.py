@@ -71,34 +71,13 @@ def convert_epub_to_pdf(uploaded_file, debug=False, st_write=None):
 
 def get_wkhtmltopdf_path(debug=False, st_write=None):
     base_path = os.path.dirname(os.path.abspath(__file__))
-    exe_name = 'wkhtmltopdf.deb' if sys.platform.startswith('win') else 'wkhtmltopdf'
+    exe_name = 'wkhtmltopdf.exe' if sys.platform.startswith('win') else 'wkhtmltopdf'
     ruta = os.path.join(base_path, 'wkhtmltopdf', 'bin', exe_name)
 
-    if debug:
-        dprint = st_write if st_write else print
-        dprint(f"[DEBUG] base_path = {base_path}")
-        dprint(f"[DEBUG] ruta completa wkhtmltopdf = {ruta}")
+ruta_wkhtmltopdf = get_wkhtmltopdf_path()
+print(f"Usando wkhtmltopdf en: {ruta_wkhtmltopdf}")
 
-    return ruta
-
-
-    def configurar_pdfkit(debug=False, st_write=None):
-        def dprint(msg):
-            if debug:
-                (st_write if st_write else print)(msg)
-
-        ruta_wkhtmltopdf = get_wkhtmltopdf_path(debug=debug, st_write=st_write)
-        dprint(f"Usando wkhtmltopdf en: {ruta_wkhtmltopdf}")
-
-        if not os.path.exists(ruta_wkhtmltopdf):
-            dprint(f"❌ Error: No se encontró wkhtmltopdf en {ruta_wkhtmltopdf}")
-            raise FileNotFoundError(f"No se encontró wkhtmltopdf en {ruta_wkhtmltopdf}")
-
-        if not os.access(ruta_wkhtmltopdf, os.X_OK):
-            dprint(f"❌ Error: wkhtmltopdf no tiene permisos de ejecución.")
-            raise PermissionError("wkhtmltopdf no tiene permisos de ejecución.")
-
-        return pdfkit.configuration(wkhtmltopdf=ruta_wkhtmltopdf)
+config = pdfkit.configuration(wkhtmltopdf=ruta_wkhtmltopdf)
 
 
     # Guardar archivo EPUB temporalmente
