@@ -71,8 +71,8 @@ def convert_epub_to_pdf(uploaded_file, debug=False, st_write=None):
 
     def get_wkhtmltopdf_path():
         base_path = os.path.dirname(os.path.abspath(__file__))
-        exe_name = 'wkhtmltopdf.exe' if sys.platform.startswith('win') else 'wkhtmltopdf'
-        return os.path.join(base_path, 'wkhtmltopdf', 'bin', exe_name)
+        exe_name = 'wkhtmltopdf.deb' if sys.platform.startswith('win') else 'wkhtmltopdf'
+    return os.path.join(base_path, 'wkhtmltopdf', 'bin', exe_name)
 
     ruta_wkhtmltopdf = get_wkhtmltopdf_path()
     dprint(f"Usando wkhtmltopdf en: {ruta_wkhtmltopdf}")
