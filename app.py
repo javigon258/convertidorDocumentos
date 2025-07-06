@@ -77,7 +77,16 @@ def convert_epub_to_pdf(uploaded_file, debug=False, st_write=None):
     ruta_wkhtmltopdf = get_wkhtmltopdf_path()
     dprint(f"Usando wkhtmltopdf en: {ruta_wkhtmltopdf}")
 
+    if not os.path.exists(ruta_wkhtmltopdf):
+        dprint(f"Error: No se encontró wkhtmltopdf en {ruta_wkhtmltopdf}")
+        raise FileNotFoundError(f"No se encontró wkhtmltopdf en {ruta_wkhtmltopdf}")
+
+    if not os.access(ruta_wkhtmltopdf, os.X_OK):
+        dprint(f"Error: wkhtmltopdf no tiene permisos de ejecución.")
+        raise PermissionError("wkhtmltopdf no tiene permisos de ejecución.")
+
     config = pdfkit.configuration(wkhtmltopdf=ruta_wkhtmltopdf)
+
 
     # Guardar archivo EPUB temporalmente
     with tempfile.NamedTemporaryFile(delete=False, suffix=".epub") as tmp_file:
