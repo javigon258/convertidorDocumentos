@@ -64,11 +64,6 @@ def convert_images_to_pdf(images, page_size):
     pdf.output(output_path)
     return output_path
 
-def convert_epub_to_pdf(uploaded_file, debug=False, st_write=None):
-    def dprint(msg):
-        if debug:
-            (st_write if st_write else print)(msg)
-
 def get_wkhtmltopdf_path(debug=False, st_write=None):
     base_path = os.path.dirname(os.path.abspath(__file__))
     exe_name = 'wkhtmltopdf.exe' if sys.platform.startswith('win') else 'wkhtmltopdf'
@@ -77,14 +72,12 @@ def get_wkhtmltopdf_path(debug=False, st_write=None):
         (st_write if st_write else print)(f"Usando wkhtmltopdf en: {ruta}")
     return ruta  # MUY IMPORTANTE devolver la ruta
 
-
 def convert_epub_to_pdf(uploaded_file, debug=False, st_write=None):
     def dprint(msg):
         if debug:
             (st_write if st_write else print)(msg)
 
     ruta_wkhtmltopdf = get_wkhtmltopdf_path(debug, st_write)
-
     config = pdfkit.configuration(wkhtmltopdf=ruta_wkhtmltopdf)
 
     # Guardar archivo EPUB temporalmente
@@ -267,12 +260,19 @@ elif accion == "📖 EPUB a PDF":
         key="epub_uploader"
     )
     if epub_file:
-        if st.button("📥 Convertir a PDF"):
-            with st.spinner("Procesando EPUB..."):
-                try:
-                    pdf_path = convert_epub_to_pdf(epub_file)
-                    with open(pdf_path, "rb") as f:
-                        st.success("✅ PDF generado correctamente.")
-                        st.download_button("📄 Descargar PDF", f, file_name=os.path.basename(pdf_path), mime="application/pdf")
-                except Exception as e:
-                    st.error(f"❌ Error al convertir: {e}")
+        st.write(f"Archivo recibido: {uploaded_file.name} ({uploaded_file.size} bytes)")
+
+            # Llamamos a la función con debug y enviamos st.write para mostrar en la app
+            try:
+                pdf_path, title, author = convert_epub_to_pdf(uploaded_file, debug=True, st_write=st.write)
+                st.success("EPUB leído y convertido correctamente!")
+                st.write(f"Título: {title}")
+                st.write(f"Autor: {author}")
+
+                # Mostrar link para descargar PDF generado
+                with open(pdf_path, "rb") as f:
+                    pdf_bytes = f.read()
+                st.download_button(label="Descargar PDF generado", data=pdf_bytes, file_name=uploaded_file.name.rsplit('.',1)[0] + ".pdf", mime="application/pdf")
+
+            except Exception as e:
+                st.error(f"Error durante la conversión: {e}")
